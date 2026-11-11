@@ -1,0 +1,362 @@
+{
+  "info": {
+    "_postman_id": "epia-crm-backend-technical-assessment",
+    "name": "EPIA CRM Backend Technical Assessment API",
+    "description": "Production-grade REST API collection for EPIA CRM Backend Technical Assessment including Appointments, WhatsApp Simulation, and CRM Follow-Up Management.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "appointmentId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "followupId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        },
+        "description": "Checks backend operational and database connectivity status."
+      }
+    },
+    {
+      "name": "2. Appointments",
+      "item": [
+        {
+          "name": "Create Appointment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('appointmentId', jsonData.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Eleanor Vance\",\n  \"phone\": \"9876543210\",\n  \"date\": \"2026-11-20\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "appointments"
+              ]
+            },
+            "description": "Creates a new appointment with SQLite persistent storage."
+          }
+        },
+        {
+          "name": "Get Appointment By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments/{{appointmentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "appointments",
+                "{{appointmentId}}"
+              ]
+            },
+            "description": "Retrieves an appointment by its unique identifier."
+          }
+        },
+        {
+          "name": "Get All Appointments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "appointments"
+              ]
+            },
+            "description": "Retrieves all appointments ordered by date."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. WhatsApp Integration",
+      "item": [
+        {
+          "name": "Send Simulated WhatsApp Reminder (Success)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentId\": {{appointmentId}},\n  \"phone\": \"9876543210\",\n  \"message\": \"Your healthcare consultation is scheduled for tomorrow at 10:00 AM.\",\n  \"simulationMode\": \"success\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/whatsapp/send-reminder",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "whatsapp",
+                "send-reminder"
+              ]
+            },
+            "description": "Dispatches a simulated WhatsApp reminder. Status becomes 'sent' (accepted by provider gateway)."
+          }
+        },
+        {
+          "name": "Simulate WhatsApp OAuth Error 190 (Failure)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentId\": {{appointmentId}},\n  \"phone\": \"9876543210\",\n  \"message\": \"Simulating expired OAuth token response from Meta.\",\n  \"simulationMode\": \"invalid_token\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/whatsapp/send-reminder",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "whatsapp",
+                "send-reminder"
+              ]
+            },
+            "description": "Simulates Meta API OAuth error 190. Returns HTTP 502 and records 'failed' status in SQLite."
+          }
+        },
+        {
+          "name": "Get All WhatsApp Messages History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/whatsapp/messages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "whatsapp",
+                "messages"
+              ]
+            },
+            "description": "Retrieves the persistent audit log of all dispatched and failed messages."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. CRM Follow-Ups",
+      "item": [
+        {
+          "name": "Create Follow-Up",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('followupId', jsonData.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentId\": {{appointmentId}},\n  \"followupDate\": \"2026-11-22\",\n  \"notes\": \"Check post-consultation medication compliance.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/followups",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "followups"
+              ]
+            },
+            "description": "Creates a new follow-up with default status 'pending'."
+          }
+        },
+        {
+          "name": "Trigger Duplicate Follow-Up (Expect 409 Conflict)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentId\": {{appointmentId}},\n  \"followupDate\": \"2026-11-22\",\n  \"notes\": \"Attempting to create duplicate for the same date.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/followups",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "followups"
+              ]
+            },
+            "description": "Demonstrates SQLite UNIQUE(appointment_id, followup_date) constraint preventing duplicates (HTTP 409)."
+          }
+        },
+        {
+          "name": "Get Pending Follow-Ups",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/followups/pending",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "followups",
+                "pending"
+              ]
+            },
+            "description": "Retrieves pending follow-ups with related patient appointment details sorted by date."
+          }
+        },
+        {
+          "name": "Get Follow-Up By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/followups/{{followupId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "followups",
+                "{{followupId}}"
+              ]
+            },
+            "description": "Retrieves individual follow-up by ID."
+          }
+        },
+        {
+          "name": "Mark Follow-Up Completed (Idempotent)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/followups/{{followupId}}/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "followups",
+                "{{followupId}}",
+                "complete"
+              ]
+            },
+            "description": "Marks follow-up as completed and updates updated_at."
+          }
+        },
+        {
+          "name": "Get All Follow-Ups (Filter by Status)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/followups?status=completed",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "followups"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "completed"
+                }
+              ]
+            },
+            "description": "Retrieves all follow-ups filtered by query parameter (?status=completed)."
+          }
+        }
+      ]
+    }
+  ]
+}
