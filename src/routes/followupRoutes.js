@@ -29,3 +29,4 @@ router.get('/:id', validateFollowupId, followupController.getFollowupById);
 router.patch('/:id/complete', validateFollowupId, followupController.completeFollowup);
 
 module.exports = router;
+

@@ -15,3 +15,4 @@ router.post('/send-reminder', validateSendReminder, whatsappController.sendRemin
 router.get('/messages', whatsappController.getMessages);
 
 module.exports = router;
+

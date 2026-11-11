@@ -21,3 +21,4 @@ router.get('/', appointmentController.getAllAppointments);
 router.get('/:id', validateAppointmentId, appointmentController.getAppointmentById);
 
 module.exports = router;
+

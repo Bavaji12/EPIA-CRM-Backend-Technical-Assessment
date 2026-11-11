@@ -152,3 +152,4 @@ module.exports = {
   clearDb,
   resolveDbPath
 };
+

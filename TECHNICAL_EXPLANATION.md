@@ -19,3 +19,4 @@ For enterprise production scaling, recommended enhancements include:
 - Migrating to PostgreSQL for multi-region clustering.
 - Integrating message queues (e.g., BullMQ/Redis) with exponential backoff and Meta Webhook listeners for delivery receipts (`delivered`, `read`).
 - Adding JWT/RBAC authentication, Redis caching, and OpenTelemetry distributed tracing.
+
