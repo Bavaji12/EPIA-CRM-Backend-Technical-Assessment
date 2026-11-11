@@ -14,3 +14,4 @@ services:
     volumes:
       - ./database:/app/database
     restart: unless-stopped
+

@@ -26,3 +26,4 @@ ENV DB_PATH=/app/database/epia_crm.db
 
 # Run the server
 CMD ["npm", "start"]
+
