@@ -1,5 +1,10 @@
 # EPIA CRM Backend Technical Assessment
 
+![CI Pipeline](https://github.com/Bavaji12/EPIA-CRM-Backend-Technical-Assessment/actions/workflows/ci.yml/badge.svg)
+![Tests](https://img.shields.io/badge/Tests-32%20passed-brightgreen)
+![Node](https://img.shields.io/badge/Node.js-18%20%7C%2020%20%7C%2022%20%7C%2024-blue)
+![License](https://img.shields.io/badge/License-ISC-green)
+
 A production-style RESTful backend for the EPIA CRM system developed with Node.js, Express.js, and SQLite. This system delivers appointment management, simulated Meta WhatsApp Business Cloud API reminders with OAuth error 190 handling, and CRM follow-up tracking with database-enforced duplicate prevention.
 
 ---
