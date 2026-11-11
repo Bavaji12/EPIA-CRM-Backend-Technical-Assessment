@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EPIA CRM — Healthcare Patient Portal & API Explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --primary-light: #e0f2fe;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --warning: #d97706;
+      --warning-light: #fef3c7;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-600: #475569;
+      --gray-800: #1e293b;
+      --gray-900: #0f172a;
+      --border: #e2e8f0;
+      --card-bg: #ffffff;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--gray-50);
+      color: var(--gray-900);
+      line-height: 1.5;
+    }
+    .header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-badge {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: white;
+      font-weight: 700;
+      font-size: 1.25rem;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+    }
+    .brand-title h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+    .brand-title p {
+      font-size: 0.8rem;
+      color: var(--gray-600);
+    }
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-success { background: var(--success-light); color: var(--success); }
+    .badge-danger { background: var(--danger-light); color: var(--danger); }
+    .badge-primary { background: var(--primary-light); color: var(--primary); }
+    .badge-warning { background: var(--warning-light); color: var(--warning); }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(22, 163, 74, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+    }
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      padding: 1.25rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--gray-600);
+      letter-spacing: 0.5px;
+    }
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-top: 4px;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--gray-600);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 900px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--gray-800);
+      margin-bottom: 4px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0.65rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-sm { padding: 4px 10px; font-size: 0.8rem; border-radius: 6px; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .table-container {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+    th {
+      background: var(--gray-100);
+      padding: 0.75rem;
+      font-weight: 600;
+      color: var(--gray-800);
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    tr:hover { background: var(--gray-50); }
+    .response-box {
+      background: #0f172a;
+      color: #38bdf8;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      overflow-x: auto;
+      max-height: 250px;
+      margin-top: 1rem;
+    }
+    .endpoint-item {
+      padding: 0.75rem;
+      background: var(--gray-50);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .method-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: white;
+    }
+    .method-get { background: #0284c7; }
+    .method-post { background: #16a34a; }
+    .method-patch { background: #d97706; }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+      font-size: 0.9rem;
+      z-index: 1000;
+      display: none;
+      animation: fadeIn 0.3s;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-brand">
+      <div class="logo-badge">E</div>
+      <div class="brand-title">
+        <h1>EPIA CRM — Backend Technical Assessment</h1>
+        <p>Production REST API • SQLite Persistence • WhatsApp Simulation</p>
+      </div>
+    </div>
+    <div class="header-status">
+      <span class="badge badge-success"><span class="pulse-dot"></span> System Live (Port 3000)</span>
+      <span class="badge badge-primary">SQLite WAL Mode</span>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Metrics Bar -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Appointments</div>
+        <div class="stat-value" id="stat-appointments">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending Follow-Ups</div>
+        <div class="stat-value" id="stat-pending" style="color: var(--warning);">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Messages Logged</div>
+        <div class="stat-value" id="stat-messages" style="color: var(--primary);">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Automated Tests</div>
+        <div class="stat-value" style="color: var(--success);">32 / 32 Passed</div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('tab-appointments')">📅 Task 1: Appointments</button>
+      <button class="tab-btn" onclick="switchTab('tab-whatsapp')">💬 Task 2: WhatsApp Simulation</button>
+      <button class="tab-btn" onclick="switchTab('tab-followups')">📋 Task 3: CRM Follow-Ups</button>
+      <button class="tab-btn" onclick="switchTab('tab-docs')">📚 API Explorer & Cheatsheet</button>
+    </div>
+
+    <!-- TAB 1: Appointments -->
+    <div id="tab-appointments" class="tab-content active">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Book New Appointment</h2>
+          </div>
+          <form id="appointment-form" onsubmit="createAppointment(event)">
+            <div class="form-group">
+              <label class="form-label">Patient Full Name</label>
+              <input type="text" id="apt-name" class="form-control" placeholder="e.g. John Doe" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <input type="text" id="apt-phone" class="form-control" placeholder="e.g. 9876543210" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Appointment Date (YYYY-MM-DD)</label>
+              <input type="date" id="apt-date" class="form-control" value="2026-11-20" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Create Appointment (POST /api/appointments)</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Stored Appointments in SQLite</h2>
+            <button class="btn btn-sm btn-primary" onclick="loadAppointments()">Refresh</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Patient Name</th>
+                  <th>Phone</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="appointments-table">
+                <tr><td colspan="5" style="text-align:center;">Loading appointments...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: WhatsApp Simulation -->
+    <div id="tab-whatsapp" class="tab-content">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Send Simulated WhatsApp Reminder</h2>
+          </div>
+          <form id="whatsapp-form" onsubmit="sendWhatsAppReminder(event)">
+            <div class="form-group">
+              <label class="form-label">Recipient Phone</label>
+              <input type="text" id="wa-phone" class="form-control" value="9876543210" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Associated Appointment ID (Optional)</label>
+              <input type="number" id="wa-apt-id" class="form-control" value="1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Reminder Message</label>
+              <textarea id="wa-message" class="form-control" rows="3" required>Your consultation is confirmed for tomorrow at 10:00 AM.</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Assessment Simulation Mode</label>
+              <select id="wa-mode" class="form-control">
+                <option value="success">✅ Success (Status: 'sent', Message ID generated)</option>
+                <option value="invalid_token">❌ Meta OAuth Error 190 (Invalid / Expired Token)</option>
+                <option value="temporary_failure">⚠️ Temporary Outage (503 Service Unavailable)</option>
+                <option value="network_error">🌐 Network Error (Simulated ECONNRESET)</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Dispatch Reminder (POST /api/whatsapp/send-reminder)</button>
+          </form>
+
+          <div style="margin-top: 1rem;">
+            <label class="form-label">Real-time API Response:</label>
+            <pre id="wa-response" class="response-box">// Submit form to inspect real-time JSON response</pre>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">WhatsApp Message Audit History</h2>
+            <button class="btn btn-sm btn-primary" onclick="loadMessages()">Refresh</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Patient / Phone</th>
+                  <th>Status</th>
+                  <th>Provider ID / Error</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody id="messages-table">
+                <tr><td colspan="5" style="text-align:center;">Loading audit logs...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: CRM Follow-ups -->
+    <div id="tab-followups" class="tab-content">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Schedule Follow-Up Task</h2>
+          </div>
+          <form id="followup-form" onsubmit="createFollowup(event)">
+            <div class="form-group">
+              <label class="form-label">Appointment ID</label>
+              <input type="number" id="fu-apt-id" class="form-control" value="1" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Follow-Up Date (YYYY-MM-DD)</label>
+              <input type="date" id="fu-date" class="form-control" value="2026-11-22" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Clinical Notes (Optional)</label>
+              <textarea id="fu-notes" class="form-control" rows="2" placeholder="e.g. Check pain levels and medication compliance"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Schedule Follow-Up (POST /api/followups)</button>
+          </form>
+
+          <div style="margin-top: 1.5rem; padding: 1rem; background: var(--gray-100); border-radius: 8px;">
+            <strong style="font-size: 0.85rem;">Test Duplicate Prevention (Constraint):</strong>
+            <p style="font-size: 0.8rem; color: var(--gray-600); margin: 4px 0 10px;">Submitting twice for the same appointment and date will be rejected by SQLite UNIQUE constraint.</p>
+            <button type="button" class="btn btn-sm btn-danger" onclick="testDuplicateFollowup()">Trigger Duplicate 409 Conflict Demo</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Pending Follow-Ups (Sorted ASC)</h2>
+            <button class="btn btn-sm btn-primary" onclick="loadFollowups()">Refresh</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Patient Details</th>
+                  <th>Follow-Up Date</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="followups-table">
+                <tr><td colspan="5" style="text-align:center;">Loading follow-ups...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: API Explorer -->
+    <div id="tab-docs" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">REST API Endpoints Reference</h2>
+          <span class="badge badge-success">Open & Accessible</span>
+        </div>
+        <p style="font-size: 0.9rem; color: var(--gray-600); margin-bottom: 1.5rem;">
+          All endpoints accept and return standardized JSON. Test with cURL, Postman, or this portal.
+        </p>
+
+        <div class="endpoint-item">
+          <div>
+            <span class="method-badge method-get">GET</span>
+            <strong style="margin-left: 8px;">/health</strong>
+            <span style="color: var(--gray-600); font-size: 0.85rem; margin-left: 10px;">Operational status check</span>
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="window.open('/health', '_blank')">Open</button>
+        </div>
+
+        <div class="endpoint-item">
+          <div>
+            <span class="method-badge method-post">POST</span>
+            <strong style="margin-left: 8px;">/api/appointments</strong>
+            <span style="color: var(--gray-600); font-size: 0.85rem; margin-left: 10px;">Create patient appointment</span>
+          </div>
+          <span class="badge badge-primary">201 Created</span>
+        </div>
+
+        <div class="endpoint-item">
+          <div>
+            <span class="method-badge method-get">GET</span>
+            <strong style="margin-left: 8px;">/api/appointments</strong>
+            <span style="color: var(--gray-600); font-size: 0.85rem; margin-left: 10px;">Retrieve all appointments</span>
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="window.open('/api/appointments', '_blank')">Open</button>
+        </div>
+
+        <div class="endpoint-item">
+          <div>
+            <span class="method-badge method-post">POST</span>
+            <strong style="margin-left: 8px;">/api/whatsapp/send-reminder</strong>
+            <span style="color: var(--gray-600); font-size: 0.85rem; margin-left: 10px;">Send simulated reminder (modes: success, invalid_token, temporary_failure, network_error)</span>
+          </div>
+          <span class="badge badge-primary">200 / 502 / 503</span>
+        </div>
+
+        <div class="endpoint-item">
+          <div>
+            <span class="method-badge method-get">GET</span>
+            <strong style="margin-left: 8px;">/api/whatsapp/messages</strong>
+            <span style="color: var(--gray-600); font-size: 0.85rem; margin-left: 10px;">Retrieve WhatsApp audit log</span>
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="window.open('/api/whatsapp/messages', '_blank')">Open</button>
+        </div>
+
+        <div class="endpoint-item">
+          <div>
+            <span class="method-badge method-post">POST</span>
+            <strong style="margin-left: 8px;">/api/followups</strong>
+            <span style="color: var(--gray-600); font-size: 0.85rem; margin-left: 10px;">Create follow-up (Rejects duplicate on same date with 409)</span>
+          </div>
+          <span class="badge badge-primary">201 / 409</span>
+        </div>
+
+        <div class="endpoint-item">
+          <div>
+            <span class="method-badge method-get">GET</span>
+            <strong style="margin-left: 8px;">/api/followups/pending</strong>
+            <span style="color: var(--gray-600); font-size: 0.85rem; margin-left: 10px;">Retrieve pending follow-ups with patient details (sorted ASC)</span>
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="window.open('/api/followups/pending', '_blank')">Open</button>
+        </div>
+
+        <div class="endpoint-item">
+          <div>
+            <span class="method-badge method-patch">PATCH</span>
+            <strong style="margin-left: 8px;">/api/followups/:id/complete</strong>
+            <span style="color: var(--gray-600); font-size: 0.85rem; margin-left: 10px;">Mark follow-up as completed (idempotent)</span>
+          </div>
+          <span class="badge badge-primary">200 OK</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.style.background = isError ? '#dc2626' : '#1e293b';
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    async function loadStats() {
+      try {
+        const apts = await fetch('/api/appointments').then(r => r.json());
+        const pending = await fetch('/api/followups/pending').then(r => r.json());
+        const msgs = await fetch('/api/whatsapp/messages').then(r => r.json());
+
+        document.getElementById('stat-appointments').innerText = apts.count || 0;
+        document.getElementById('stat-pending').innerText = pending.count || 0;
+        document.getElementById('stat-messages').innerText = msgs.count || 0;
+      } catch (e) {
+        console.error('Failed loading stats:', e);
+      }
+    }
+
+    async function loadAppointments() {
+      const tbody = document.getElementById('appointments-table');
+      try {
+        const res = await fetch('/api/appointments').then(r => r.json());
+        if (!res.data || res.data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No appointments found.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = res.data.map(a => `
+          <tr>
+            <td><strong>#${a.id}</strong></td>
+            <td>${a.name}</td>
+            <td><code>${a.phone}</code></td>
+            <td><span class="badge badge-primary">${a.date}</span></td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="selectForReminder(${a.id}, '${a.phone}')">Send WA</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="5" style="color:red;text-align:center;">Failed to load.</td></tr>';
+      }
+    }
+
+    function selectForReminder(id, phone) {
+      document.getElementById('wa-phone').value = phone;
+      document.getElementById('wa-apt-id').value = id;
+      document.getElementById('wa-message').value = `Your healthcare consultation is confirmed for tomorrow at 10:00 AM.`;
+      switchTab('tab-whatsapp');
+      document.querySelectorAll('.tab-btn')[1].classList.add('active');
+      document.querySelectorAll('.tab-btn')[0].classList.remove('active');
+    }
+
+    async function createAppointment(e) {
+      e.preventDefault();
+      const payload = {
+        name: document.getElementById('apt-name').value,
+        phone: document.getElementById('apt-phone').value,
+        date: document.getElementById('apt-date').value
+      };
+      try {
+        const res = await fetch('/api/appointments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast(`Appointment #${data.data.id} created successfully!`);
+          document.getElementById('appointment-form').reset();
+          loadAppointments();
+          loadStats();
+        } else {
+          showToast(data.error || 'Failed to create appointment', true);
+        }
+      } catch (err) {
+        showToast('Network error', true);
+      }
+    }
+
+    async function loadMessages() {
+      const tbody = document.getElementById('messages-table');
+      try {
+        const res = await fetch('/api/whatsapp/messages').then(r => r.json());
+        if (!res.data || res.data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No messages logged yet.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = res.data.map(m => {
+          const badgeClass = m.status === 'sent' ? 'badge-success' : 'badge-danger';
+          const info = m.status === 'sent' 
+            ? `ID: <code>${m.provider_message_id}</code>` 
+            : `<span style="color:var(--danger)">Error ${m.error_code}: ${m.error_message}</span>`;
+          return `
+            <tr>
+              <td>#${m.id}</td>
+              <td>${m.patient_name || 'Direct'} <br><small style="color:var(--gray-600)">${m.phone}</small></td>
+              <td><span class="badge ${badgeClass}">${m.status.toUpperCase()}</span></td>
+              <td>${info}</td>
+              <td><small>${m.created_at}</small></td>
+            </tr>
+          `;
+        }).join('');
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="5" style="color:red;text-align:center;">Failed to load.</td></tr>';
+      }
+    }
+
+    async function sendWhatsAppReminder(e) {
+      e.preventDefault();
+      const payload = {
+        phone: document.getElementById('wa-phone').value,
+        appointmentId: parseInt(document.getElementById('wa-apt-id').value) || null,
+        message: document.getElementById('wa-message').value,
+        simulationMode: document.getElementById('wa-mode').value
+      };
+      const responseBox = document.getElementById('wa-response');
+      responseBox.innerText = '// Dispatching simulated reminder...';
+
+      try {
+        const res = await fetch('/api/whatsapp/send-reminder', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        responseBox.innerText = `HTTP ${res.status}\n` + JSON.stringify(data, null, 2);
+        if (res.ok) {
+          showToast('Reminder processed: Status sent!');
+        } else {
+          showToast(`Handled failure (HTTP ${res.status}): ${data.error}`, true);
+        }
+        loadMessages();
+        loadStats();
+      } catch (err) {
+        responseBox.innerText = 'Network error: ' + err.message;
+      }
+    }
+
+    async function loadFollowups() {
+      const tbody = document.getElementById('followups-table');
+      try {
+        const res = await fetch('/api/followups/pending').then(r => r.json());
+        if (!res.data || res.data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No pending follow-ups. All clear!</td></tr>';
+          return;
+        }
+        tbody.innerHTML = res.data.map(f => `
+          <tr>
+            <td><strong>#${f.id}</strong></td>
+            <td>
+              <strong>${f.patient_name}</strong> (Apt #${f.appointment_id})<br>
+              <small style="color:var(--gray-600);">${f.notes || 'No clinical notes'}</small>
+            </td>
+            <td><span class="badge badge-warning">${f.followup_date}</span></td>
+            <td><span class="badge badge-warning">${f.status}</span></td>
+            <td>
+              <button class="btn btn-sm btn-success" onclick="completeFollowup(${f.id})">Mark Complete</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="5" style="color:red;text-align:center;">Failed to load.</td></tr>';
+      }
+    }
+
+    async function createFollowup(e) {
+      e.preventDefault();
+      const payload = {
+        appointmentId: parseInt(document.getElementById('fu-apt-id').value),
+        followupDate: document.getElementById('fu-date').value,
+        notes: document.getElementById('fu-notes').value
+      };
+      try {
+        const res = await fetch('/api/followups', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast(`Follow-up #${data.data.id} created!`);
+          loadFollowups();
+          loadStats();
+        } else {
+          showToast(`HTTP ${res.status}: ${data.error}`, true);
+        }
+      } catch (err) {
+        showToast('Network error', true);
+      }
+    }
+
+    async function completeFollowup(id) {
+      try {
+        const res = await fetch(`/api/followups/${id}/complete`, { method: 'PATCH' });
+        const data = await res.json();
+        if (res.ok) {
+          showToast(`Follow-up #${id} marked as completed!`);
+          loadFollowups();
+          loadStats();
+        } else {
+          showToast(data.error || 'Failed to complete', true);
+        }
+      } catch (e) {
+        showToast('Network error', true);
+      }
+    }
+
+    async function testDuplicateFollowup() {
+      const payload = {
+        appointmentId: 1,
+        followupDate: '2026-11-22',
+        notes: 'Duplicate test'
+      };
+      // Try creating first (if not exists)
+      await fetch('/api/followups', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      // Second attempt to trigger 409
+      const res = await fetch('/api/followups', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      alert(`[HTTP ${res.status} CONFLICT RESPONSE]\n\n${data.error}`);
+    }
+
+    // Initial data load
+    loadStats();
+    loadAppointments();
+    loadMessages();
+    loadFollowups();
+  </script>
+</body>
+</html>

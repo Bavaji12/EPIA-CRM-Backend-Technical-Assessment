@@ -7,6 +7,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "demo": "node demo.js",
+    "seed": "node scripts/seed.js",
     "test": "cross-env NODE_ENV=test DB_PATH=./database/test_epia_crm.db jest --runInBand --detectOpenHandles --forceExit"
   },
   "keywords": [
