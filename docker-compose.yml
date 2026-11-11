@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  epia-crm-backend:
+    build: .
+    container_name: epia_crm_backend
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - DB_PATH=/app/database/epia_crm.db
+      - WHATSAPP_SIMULATION_ENABLED=true
+    volumes:
+      - ./database:/app/database
+    restart: unless-stopped
